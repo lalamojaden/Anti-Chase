@@ -1,4 +1,4 @@
--- JADENHUB [INSTANT TELEPORT HOLD + DRAGGABLE UI]
+-- JADENHUB [INSTANT EGG NO TIMER + INSTANT TELEPORT + DRAGGABLE UI]
 local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
 local TweenService = game:GetService("TweenService")
@@ -157,15 +157,15 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
--- 1. Instant Egg Hold Button
+-- 1. Instant Egg Hold Button (Ginawang No Timer / 0 HoldDuration para sa mga itlog)
 local EggButton = Instance.new("TextButton")
 EggButton.Size = UDim2.new(0.9, 0, 0, 42)
 EggButton.Position = UDim2.new(0.05, 0, 0, 55)
 EggButton.BackgroundColor3 = Color3.fromRGB(25, 25, 38)
 EggButton.BackgroundTransparency = 0.3
 EggButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-EggButton.Text = "⚡ Instant Egg: [ OFF ]"
-EggButton.TextSize = 15
+EggButton.Text = "⚡ Instant Egg (No Timer): [ OFF ]"
+EggButton.TextSize = 13
 EggButton.Font = Enum.Font.GothamBold
 EggButton.AutoButtonColor = true
 EggButton.Active = true
@@ -181,7 +181,7 @@ ButtonStroke.Color = Color3.fromRGB(100, 100, 130)
 ButtonStroke.Thickness = 2
 ButtonStroke.Parent = EggButton
 
--- 2. Instant Teleport Button (Hinabol at ginawang Instant Teleport kapag pinindot/hinawakan)
+-- 2. Instant Teleport Button
 local TeleportButton = Instance.new("TextButton")
 TeleportButton.Size = UDim2.new(0.9, 0, 0, 42)
 TeleportButton.Position = UDim2.new(0.05, 0, 0, 105)
@@ -293,7 +293,7 @@ local function executeInstantTeleport()
     end)
 end
 
--- 1. Instant Egg Hold Button Click
+-- 1. Instant Egg (No Timer) Toggle Logic
 local originalHoldDurations = {}
 local isInstantHoldActive = false
 local eggConnection
@@ -301,7 +301,7 @@ local eggConnection
 EggButton.MouseButton1Click:Connect(function()
     isInstantHoldActive = not isInstantHoldActive
     if isInstantHoldActive then
-        EggButton.Text = "⚡ Instant Egg: [ ON ]"
+        EggButton.Text = "⚡ Instant Egg (No Timer): [ ON ]"
         EggButton.TextColor3 = Color3.fromRGB(255, 255, 255)
         ButtonStroke.Color = Color3.fromRGB(0, 255, 150)
         TweenService:Create(EggButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(15, 60, 35)}):Play()
@@ -325,7 +325,7 @@ EggButton.MouseButton1Click:Connect(function()
             end
         end)
     else
-        EggButton.Text = "⚡ Instant Egg: [ OFF ]"
+        EggButton.Text = "⚡ Instant Egg (No Timer): [ OFF ]"
         EggButton.TextColor3 = Color3.fromRGB(255, 255, 255)
         ButtonStroke.Color = Color3.fromRGB(100, 100, 130)
         TweenService:Create(EggButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(25, 25, 38)}):Play()
@@ -344,7 +344,7 @@ EggButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- 2. Instant Teleport Button Click (Gagana agad tuwing pipindutin mo)
+-- 2. Instant Teleport Button Click
 TeleportButton.MouseButton1Click:Connect(function()
     executeInstantTeleport()
 end)
