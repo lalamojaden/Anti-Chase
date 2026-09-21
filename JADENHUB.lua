@@ -1,8 +1,7 @@
--- JADENHUB [INSTANT EGG NO TIMER + INSTANT TELEPORT + DRAGGABLE UI]
+-- JADENHUB [DELAYED SOUND AFTER EGG HOLD + FIXED]
 local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
 local TweenService = game:GetService("TweenService")
-local UserInputService = game:GetService("UserInputService")
 local localPlayer = Players.LocalPlayer
 
 -- Clean up existing JADENHUB if already running
@@ -24,7 +23,7 @@ LoadSound.SoundId = "rbxassetid://106806057419587"
 LoadSound.Volume = 1
 LoadSound.Parent = ScreenGui
 
--- Unmain Button (Grabbable)
+-- Neon Toggle / Unmain Button (Posisyon ay nasa 0.04 at hindi draggable)
 local ToggleButton = Instance.new("ImageButton")
 ToggleButton.Name = "UnmainButton"
 ToggleButton.Size = UDim2.new(0, 55, 0, 55)
@@ -33,6 +32,7 @@ ToggleButton.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
 ToggleButton.Image = "rbxassetid://114467920615660"
 ToggleButton.AutoButtonColor = false
 ToggleButton.Active = true
+ToggleButton.Draggable = false
 ToggleButton.ZIndex = 100
 ToggleButton.Parent = ScreenGui
 
@@ -45,46 +45,11 @@ ToggleStroke.Color = Color3.fromRGB(0, 255, 200)
 ToggleStroke.Thickness = 2.5
 ToggleStroke.Parent = ToggleButton
 
--- Dragging Logic para sa UnmainButton
-local btnDragging, btnDragInput, btnDragStart, btnStartPos
-
-ToggleButton.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        btnDragging = true
-        btnDragStart = input.Position
-        btnStartPos = ToggleButton.Position
-        
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                btnDragging = false
-            end
-        end)
-    end
-end)
-
-ToggleButton.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-        btnDragInput = input
-    end
-end)
-
-UserInputService.InputChanged:Connect(function(input)
-    if input == btnDragInput and btnDragging then
-        local delta = input.Position - btnDragStart
-        ToggleButton.Position = UDim2.new(
-            btnStartPos.X.Scale, 
-            btnStartPos.X.Offset + delta.X, 
-            btnStartPos.Y.Scale, 
-            btnStartPos.Y.Offset + delta.Y
-        )
-    end
-end)
-
--- Main Hub Frame (Grabbable)
+-- Main Hub Frame
 local MainFrame = Instance.new("ImageLabel")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 340, 0, 220)
-MainFrame.Position = UDim2.new(0.5, -170, 0.5, -110)
+MainFrame.Size = UDim2.new(0, 340, 0, 260)
+MainFrame.Position = UDim2.new(0.5, -170, 0.5, -130)
 MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
 MainFrame.BackgroundTransparency = 0.3
 MainFrame.Image = "rbxassetid://114467920615660"
@@ -122,50 +87,15 @@ local TitleCorner = Instance.new("UICorner")
 TitleCorner.CornerRadius = UDim.new(0, 12)
 TitleCorner.Parent = TitleLabel
 
--- Dragging Logic para sa MainFrame
-local dragging, dragInput, dragStart, startPos
-
-TitleLabel.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        dragging = true
-        dragStart = input.Position
-        startPos = MainFrame.Position
-        
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                dragging = false
-            end
-        end)
-    end
-end)
-
-TitleLabel.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-        dragInput = input
-    end
-end)
-
-UserInputService.InputChanged:Connect(function(input)
-    if input == dragInput and dragging then
-        local delta = input.Position - dragStart
-        MainFrame.Position = UDim2.new(
-            startPos.X.Scale, 
-            startPos.X.Offset + delta.X, 
-            startPos.Y.Scale, 
-            startPos.Y.Offset + delta.Y
-        )
-    end
-end)
-
--- 1. Instant Egg Hold Button (Ginawang No Timer / 0 HoldDuration para sa mga itlog)
+-- 1. Instant Egg Hold Button
 local EggButton = Instance.new("TextButton")
-EggButton.Size = UDim2.new(0.9, 0, 0, 42)
-EggButton.Position = UDim2.new(0.05, 0, 0, 55)
+EggButton.Size = UDim2.new(0.9, 0, 0, 48)
+EggButton.Position = UDim2.new(0.05, 0, 0, 58)
 EggButton.BackgroundColor3 = Color3.fromRGB(25, 25, 38)
 EggButton.BackgroundTransparency = 0.3
 EggButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-EggButton.Text = "⚡ Instant Egg (No Timer): [ OFF ]"
-EggButton.TextSize = 13
+EggButton.Text = "⚡ Instant Egg: [ OFF ]"
+EggButton.TextSize = 16
 EggButton.Font = Enum.Font.GothamBold
 EggButton.AutoButtonColor = true
 EggButton.Active = true
@@ -181,15 +111,15 @@ ButtonStroke.Color = Color3.fromRGB(100, 100, 130)
 ButtonStroke.Thickness = 2
 ButtonStroke.Parent = EggButton
 
--- 2. Instant Teleport Button
+-- 2. Anti Chase Toggle Button
 local TeleportButton = Instance.new("TextButton")
-TeleportButton.Size = UDim2.new(0.9, 0, 0, 42)
-TeleportButton.Position = UDim2.new(0.05, 0, 0, 105)
+TeleportButton.Size = UDim2.new(0.9, 0, 0, 48)
+TeleportButton.Position = UDim2.new(0.05, 0, 0, 114)
 TeleportButton.BackgroundColor3 = Color3.fromRGB(25, 25, 38)
 TeleportButton.BackgroundTransparency = 0.3
 TeleportButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-TeleportButton.Text = "⚡ Instant Teleport"
-TeleportButton.TextSize = 15
+TeleportButton.Text = "Anti Chase: [ OFF ]"
+TeleportButton.TextSize = 16
 TeleportButton.Font = Enum.Font.GothamBold
 TeleportButton.AutoButtonColor = true
 TeleportButton.Active = true
@@ -201,19 +131,19 @@ TeleportCorner.CornerRadius = UDim.new(0, 8)
 TeleportCorner.Parent = TeleportButton
 
 local TeleportStroke = Instance.new("UIStroke")
-TeleportStroke.Color = Color3.fromRGB(0, 255, 120)
+TeleportStroke.Color = Color3.fromRGB(100, 100, 130)
 TeleportStroke.Thickness = 2
 TeleportStroke.Parent = TeleportButton
 
 -- Status Label
 local StatusLabel = Instance.new("TextLabel")
-StatusLabel.Size = UDim2.new(0.9, 0, 0, 32)
-StatusLabel.Position = UDim2.new(0.05, 0, 0, 155)
+StatusLabel.Size = UDim2.new(0.9, 0, 0, 38)
+StatusLabel.Position = UDim2.new(0.05, 0, 0, 175)
 StatusLabel.BackgroundColor3 = Color3.fromRGB(20, 20, 28)
 StatusLabel.BackgroundTransparency = 0.4
 StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 200)
 StatusLabel.Text = "Status: Ready to use!"
-StatusLabel.TextSize = 13
+StatusLabel.TextSize = 14
 StatusLabel.Font = Enum.Font.GothamSemibold
 StatusLabel.ZIndex = 15
 StatusLabel.Parent = MainFrame
@@ -245,7 +175,7 @@ LoadTitle.Font = Enum.Font.GothamBold
 LoadTitle.ZIndex = 2
 LoadTitle.Parent = LoadScreen
 
--- Neon Border Effect
+-- Dynamic RGB Neon Border Effect
 task.spawn(function()
     local hue = 0
     while true do
@@ -257,43 +187,68 @@ end)
 
 -- Variables & Logic
 local fixedCFrame = CFrame.new(368.3, 70.3, -362.0)
+local isAutoTeleportActive = false
+local promptConnections = {}
 local isTeleporting = false
 
-local function executeInstantTeleport()
-    if isTeleporting then return end
+local function stopAutoTeleport()
+    isAutoTeleportActive = false
+    TeleportButton.Text = "Anti Chase: [ OFF ]"
+    TeleportButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    TeleportStroke.Color = Color3.fromRGB(100, 100, 130)
+    TweenService:Create(TeleportButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(25, 25, 38)}):Play()
+    
+    for _, conn in pairs(promptConnections) do
+        if conn then conn:Disconnect() end
+    end
+    table.clear(promptConnections)
+end
+
+local function executeTeleport()
+    local char = localPlayer.Character
+    local rootPart = char and char:FindFirstChild("HumanoidRootPart")
+    if rootPart then
+        rootPart.Anchored = false
+        rootPart.Velocity = Vector3.new(0, 0, 0)
+        rootPart.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+        rootPart.CFrame = fixedCFrame
+    end
+end
+
+local function triggerTeleport(reason)
+    if not isAutoTeleportActive or isTeleporting then return end
     isTeleporting = true
     
-    StatusLabel.Text = "Status: Teleporting..."
+    StatusLabel.Text = "Status: " .. reason
     
-    LoadScreen.ZIndex = 99999
-    LoadTitle.ZIndex = 100000
-    LoadScreen.Visible = true
-    
-    LoadSound:Play()
-    
-    for i = 1, 5 do
-        local char = localPlayer.Character
-        local rootPart = char and char:FindFirstChild("HumanoidRootPart")
-        if rootPart then
-            rootPart.Anchored = false
-            rootPart.Velocity = Vector3.new(0, 0, 0)
-            rootPart.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
-            rootPart.CFrame = fixedCFrame
+    -- Mag-aantay muna ng 0.5 seconds pagkatapos i-hold/trigger bago lumabas ang loadscreen at tumugtog ang tunog
+    task.delay(0.5, function()
+        LoadScreen.ZIndex = 99999
+        LoadTitle.ZIndex = 100000
+        LoadScreen.Visible = true
+        
+        -- Play sound after 0.5s delay
+        LoadSound:Play()
+        
+        -- 5 Teleport loops
+        for i = 1, 5 do
+            executeTeleport()
+            if i < 5 then
+                task.wait(0.05)
+            end
         end
-        if i < 5 then
-            task.wait(0.05)
-        end
-    end
-    
-    task.delay(0.8, function()
-        LoadScreen.Visible = false
-        LoadScreen.ZIndex = 1
-        StatusLabel.Text = "Status: Teleported successfully!"
-        isTeleporting = false
+        
+        -- 1.1 seconds delay bago mawala ang loadscreen
+        task.delay(1.1, function()
+            LoadScreen.Visible = false
+            LoadScreen.ZIndex = 1
+            StatusLabel.Text = "Status: Anti Chase Active!"
+            isTeleporting = false
+        end)
     end)
 end
 
--- 1. Instant Egg (No Timer) Toggle Logic
+-- 1. Instant Egg Hold Button Click
 local originalHoldDurations = {}
 local isInstantHoldActive = false
 local eggConnection
@@ -301,7 +256,7 @@ local eggConnection
 EggButton.MouseButton1Click:Connect(function()
     isInstantHoldActive = not isInstantHoldActive
     if isInstantHoldActive then
-        EggButton.Text = "⚡ Instant Egg (No Timer): [ ON ]"
+        EggButton.Text = "⚡ Instant Egg: [ ON ]"
         EggButton.TextColor3 = Color3.fromRGB(255, 255, 255)
         ButtonStroke.Color = Color3.fromRGB(0, 255, 150)
         TweenService:Create(EggButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(15, 60, 35)}):Play()
@@ -325,7 +280,7 @@ EggButton.MouseButton1Click:Connect(function()
             end
         end)
     else
-        EggButton.Text = "⚡ Instant Egg (No Timer): [ OFF ]"
+        EggButton.Text = "⚡ Instant Egg: [ OFF ]"
         EggButton.TextColor3 = Color3.fromRGB(255, 255, 255)
         ButtonStroke.Color = Color3.fromRGB(100, 100, 130)
         TweenService:Create(EggButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(25, 25, 38)}):Play()
@@ -344,9 +299,43 @@ EggButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- 2. Instant Teleport Button Click
+-- 2. Anti Chase Toggle Button Click
 TeleportButton.MouseButton1Click:Connect(function()
-    executeInstantTeleport()
+    isAutoTeleportActive = not isAutoTeleportActive
+    if isAutoTeleportActive then
+        TeleportButton.Text = "Anti Chase: [ ON ]"
+        TeleportButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+        TeleportStroke.Color = Color3.fromRGB(0, 255, 150)
+        TweenService:Create(TeleportButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(15, 60, 35)}):Play()
+        StatusLabel.Text = "Status: Anti Chase Active!"
+        
+        for _, obj in ipairs(workspace:GetDescendants()) do
+            if obj:IsA("ProximityPrompt") then
+                local conn = obj.Triggered:Connect(function(playerWhoTriggered)
+                    if playerWhoTriggered == localPlayer and isAutoTeleportActive then
+                        triggerTeleport("Triggered")
+                    end
+                end)
+                table.insert(promptConnections, conn)
+            end
+        end
+        
+        local newPromptConn = workspace.DescendantAdded:Connect(function(obj)
+            if obj:IsA("ProximityPrompt") then
+                local conn = obj.Triggered:Connect(function(playerWhoTriggered)
+                    if playerWhoTriggered == localPlayer and isAutoTeleportActive then
+                        triggerTeleport("Triggered")
+                    end
+                end)
+                table.insert(promptConnections, conn)
+            end
+        end)
+        table.insert(promptConnections, newPromptConn)
+        
+    else
+        stopAutoTeleport()
+        StatusLabel.Text = "Status: Turned OFF."
+    end
 end)
 
 -- Toggle Main UI Visibility via Unmain Button
